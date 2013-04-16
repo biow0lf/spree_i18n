@@ -15,12 +15,11 @@ To install, simply add the Gem to your Gemfile:
 
 ## Spree Products Translations
 
-We've been adding a product translations feature. Follow the steps to see it working.
+We've introduced a product translations feature. Follow the steps to get it working.
 
-Point to the content branch. And add the globalize3 gem to you Gemfile
+Point to the content branch:
 
     gem 'spree_i18n', :git => 'git://github.com/spree/spree_i18n.git', :branch => 'content'
-    gem 'globalize3'
 
 Install and run the migration to create the product translations table:
 
@@ -29,7 +28,7 @@ Install and run the migration to create the product translations table:
 
 Add the following line to admin/all.js on your app:
 
-    //= require admin/spree\_i18n
+    //= require admin/spree_i18n
 
 Go to admin products list and click on any product. You should see a TRANSLATIONS link
 in the products subtabs on the right. You should be able to set name, description,
