@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "Product Translations tab" do
+describe "Translations" do
   stub_authorization!
 
   let(:language) { I18n.t("this_file_language", locale: "pt-BR") }
@@ -11,19 +11,49 @@ describe "Product Translations tab" do
     Spree::Config.supported_locales = ['en', 'pt-BR']
   end
 
-  context "fills in product translations", js: true do
-    let(:product) { create(:product) }
+  context "products", js: true do
+    let!(:product) { create(:product) }
 
-    it "displays translated name on frontend" do
-      visit spree.admin_product_path(product)
-      click_on "Translations"
+    context "fills in translations fields" do
+      it "displays translated name on frontend" do
+        visit spree.admin_product_path(product)
+        click_on "Translations"
 
-      within("#attr_fields .name.en.odd") { fill_in_name "Pearl Jam" }
-      within("#attr_fields .name.pt-BR.odd") { fill_in_name "Academia da Berlinda" }
-      click_on "Update"
+        within("#attr_fields .name.en.odd") { fill_in_name "Pearl Jam" }
+        within("#attr_fields .name.pt-BR.odd") { fill_in_name "Academia da Berlinda" }
+        click_on "Update"
 
-      change_locale
-      page.should have_content("Academia da Berlinda")
+        change_locale
+        page.should have_content("Academia da Berlinda")
+      end
+    end
+
+    context "translates option type" do
+      let!(:option_type) { create(:option_value).option_type }
+
+      it "displays translated name on frontend" do
+        visit spree.admin_option_types_path
+        find('.icon-flag').click
+
+        within("#attr_fields .name.en.odd") { fill_in_name "shirt sizes" }
+        within("#attr_list") { click_on "presentation" }
+        within("#attr_fields .presentation.en.odd") { fill_in_name "size" }
+        within("#attr_fields .presentation.pt-BR.odd") { fill_in_name "tamanho" }
+        click_on "Update"
+
+        visit spree.admin_product_path(product)
+        select2_search "size", :from => "Option Types"
+        click_button "Update"
+        visit spree.admin_product_path(product)
+
+        within('#sidebar') { click_link "Variants" }
+        click_on "New Variant"
+        click_button "Create"
+
+        change_locale
+        visit spree.product_path(product)
+        page.should have_content("tamanho")
+      end
     end
   end
 
